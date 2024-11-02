@@ -77,3 +77,29 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+
+
+============================  NEW APK BUILD COMMAND ==============================
+
+cd android => Enter
+./gradlew clean =>Enter
+./gradlew assembleRelease =>Enter
+
+OUTPUT Apk path= F:\Acenna\Acenna_Mobile\android\app\build\outputs\apk\release
+===================================================================================
+=================================c drive clean====================================
+
+============================ DEBUGE APK BUILD COMMAND==============================
+
+cd android => Enter
+./gradlew clean =>Enter
+./gradlew assembleDebug =>Enter
+
+OUTPUT Apk path= F:\Acenna\Acenna_Mobile\android\app\build\outputs\apk\release
+===================================================================================
+
+{
+    "feature": "USER_DASHBOARD",
+    "userId": 1
+}
+"# AJ-HISAB" 
