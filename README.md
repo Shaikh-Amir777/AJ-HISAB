@@ -85,8 +85,6 @@ cd android => Enter
 ./gradlew clean =>Enter
 ./gradlew assembleRelease =>Enter
 
-OUTPUT Apk path= F:\Acenna\Acenna_Mobile\android\app\build\outputs\apk\release
-===================================================================================
 =================================c drive clean====================================
 
 ============================ DEBUGE APK BUILD COMMAND==============================
@@ -95,11 +93,5 @@ cd android => Enter
 ./gradlew clean =>Enter
 ./gradlew assembleDebug =>Enter
 
-OUTPUT Apk path= F:\Acenna\Acenna_Mobile\android\app\build\outputs\apk\release
 ===================================================================================
-
-{
-    "feature": "USER_DASHBOARD",
-    "userId": 1
-}
-"# AJ-HISAB" 
+ 
