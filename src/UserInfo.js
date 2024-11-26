@@ -1,59 +1,64 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Alert, ScrollView } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { postData } from './utils/apiService';
+import { deleteData, postData } from './utils/apiService';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function UserInfo({ navigation, route }) {
 
-    const { mobileNumber, fullName, address, password, userId } = route.params;
+    const { mobileNumber, fullName, address, password, userId, status } = route.params;
     const data = route.params;
-    // console.log("data****", data)
+    console.log("data**UserInfo**tab1", data.status)
 
     return (
         <Tab.Navigator>
             <Tab.Screen
                 name="UserInfo"
-                component={Test1}
-                initialParams={{ mobileNumber, fullName, address, password, userId }}
+                component={UserInfo1}
+                initialParams={{ mobileNumber, fullName, address, password, userId, status }}
             />
             <Tab.Screen
                 name="Add Transaction"
-                component={Test2}
+                component={Add_Transaction2}
                 initialParams={{ mobileNumber, fullName, address, userId }}
             />
 
             <Tab.Screen
                 name="Transaction Details"
-                component={Test3}
+                component={Transaction_Details3}
                 initialParams={{ mobileNumber, fullName, address, userId }}
             />
         </Tab.Navigator>
     );
 }
 
-function Test1({ navigation, route }) {
-    const { mobileNumber, fullName, address, password, userId } = route.params;
-    console.log("route.params****Test1*", route.params);
+function UserInfo1({ navigation, route }) {
+    const { mobileNumber, fullName, address, password, userId, status } = route.params;
+    const inActiveData = route.params.status;
+    console.log("inActiveData********", inActiveData)
+    console.log("route.params****UserInfo1*", route.params);
     const [editPassword, setEditPassword] = useState(password);
     const [editFullName, setEiditFullName] = useState(fullName);
     const [editAddress, setEditAddress] = useState(address);
     const [editMobileNumber, setEditMobileNumber] = useState(mobileNumber);
+    const [newStatus, setNewStatus] = useState(inActiveData);
 
+    console.log("newStatus*", newStatus);
 
-    const newPassword = async () => {
-        console.log("newPassword12345678");
+    const updateUser = async () => {
+        // console.log("newPassword12345678");
         const data = {
             feature: "PASSWORD_UPDATE",
             id: userId,
             newPassword: editPassword,
             newFullName: editFullName,
             newAddress: editAddress,
-            newMobileNumber: editMobileNumber
+            newMobileNumber: editMobileNumber,
+            newStatus: newStatus
         };
         console.log("newPassword12345678----data", data);
         try {
@@ -67,6 +72,71 @@ function Test1({ navigation, route }) {
         } catch (error) {
             console.error("Error fetching user dashboard data: ", error);
             Alert.alert('Error', 'Failed to fetch data. Please try again later.');
+        }
+    };
+
+
+    // const removeData = async () => {
+    //     console.log("newPassword12345678");
+    //     const data = {
+    //         feature: "DELETE_USER",
+    //         userId: userId
+    //     };
+
+    //     console.log("newRemoveData----data", data);
+    //     try {
+    //         console.log("DELETE_USER__Request data: ", data);
+    //         let userData = await postData('service', data);
+    //         console.log("DELETE_USER response:", userData);
+    //         if (userData) {
+    //             Alert.alert(
+    //                 "Are you sure?", // Alert title
+    //                 // "Do you want to navigate to the Admin Dashboard?", // Alert message
+    //                 [
+    //                     {
+    //                         text: "Cancel", // Cancel button
+    //                         onPress: () => console.log("Cancel Pressed"), // Action for Cancel button
+    //                         style: "cancel", // Style for the Cancel button
+    //                     },
+    //                     {
+    //                         text: "Okay", // Okay button
+    //                         onPress: () => navigation.navigate("AdminDashboardScreen"), // Action for Okay button
+    //                     },
+    //                 ],
+    //                 { cancelable: false } // Prevent dismissing the alert by tapping outside
+    //             );
+    //         }
+
+
+    //     } catch (error) {
+    //         console.error("Error fetching newRemoveData data: ", error);
+    //         Alert.alert('Error', 'Failed to fetch data. Please try again later.');
+    //     }
+    // };
+
+    const removeData = async () => {
+        console.log("removeData****call");
+        const data = {
+            feature: "DELETE_USER",
+            userId: userId // Ensure userId is correctly set
+        };
+        console.log("removeData****call", data);
+
+        try {
+            let response = await postData('service', data);
+            console.log("Delete Response:", response.data.status);
+
+            // If delete was successful, you can navigate or give success feedback
+            if (response) {
+                // Alert.alert(
+                    // "Are you sure?", // Alert title
+                    navigation.navigate("AdminDashboardScreen") // Action for Okay button
+            // )
+        }
+
+        } catch (error) {
+            console.error("Error deleting data:", error.response?.data || error.message);
+            Alert.alert('Error', 'Failed to delete data. Please try again later.');
         }
     };
 
@@ -104,6 +174,7 @@ function Test1({ navigation, route }) {
                     placeholder="Enter Address"
                 />
             </View>
+
             <View style={styles.inputRow}>
                 <Text style={styles.label}>Password:</Text>
                 <TextInput
@@ -112,17 +183,45 @@ function Test1({ navigation, route }) {
                     onChangeText={setEditPassword}
                 />
             </View>
-            <View style={styles.buttonContainer}>
+
+            <View style={styles.inputRow}>
+                <Text style={styles.label}>User Type:</Text>
+                <View style={styles.radioContainer}>
+                    <TouchableOpacity
+                        style={styles.radioButton}
+                        onPress={() => setNewStatus('ACTIVE')}
+                    >
+                        <View style={styles.outerCircle}>
+                            {newStatus === 'ACTIVE' && <View style={styles.innerCircle} />}
+                        </View>
+                        <Text style={styles.radioText}>ACTIVE</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.radioButton}
+                        onPress={() => setNewStatus('INACTIVE')}
+                    >
+                        <View style={styles.outerCircle}>
+                            {newStatus === 'INACTIVE' && <View style={styles.innerCircle} />}
+                        </View>
+                        <Text style={styles.radioText}>INACTIVE</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            <View style={styles.buttonContainerTab1}>
                 {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AdminDashboardScreen")}> */}
-                <TouchableOpacity style={styles.button} onPress={newPassword}>
-                    <Text style={styles.buttonText}>Submit</Text>
+                <TouchableOpacity style={styles.buttonTab1} onPress={updateUser}>
+                    <Text style={styles.buttonText}>Update</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.buttonTab1} onPress={removeData}>
+                    <Text style={styles.buttonText}>Remove</Text>
                 </TouchableOpacity>
             </View>
         </View>
     );
 }
 
-function Test2({ navigation, route }) {
+function Add_Transaction2({ navigation, route }) {
     const { mobileNumber, fullName, address, userId } = route.params;
     console.log("route.params*****", route.params);
 
@@ -132,7 +231,9 @@ function Test2({ navigation, route }) {
     const [transactionType, setTransactionType] = useState('');
 
     const date = new Date();
-    const formatDate = date.toLocaleDateString();
+    const formatDate = `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
+
+    console.log(formatDate);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [selectDate, setSelectDate] = useState(formatDate);
 
@@ -196,6 +297,7 @@ function Test2({ navigation, route }) {
     };
 
     return (
+        <ScrollView>
         <View style={styles.container}>
             <View style={styles.inputRow}>
                 <Text style={styles.label}>Name:</Text>
@@ -285,10 +387,11 @@ function Test2({ navigation, route }) {
                 </TouchableOpacity>
             </View>
         </View>
+        </ScrollView>
     );
 }
 
-function Test3({ navigation, route }) {
+function Transaction_Details3({ navigation, route }) {
     // console.log("route******test3", route.params.userId);
     const userId = route.params.userId
     const [userTransactionData, setUserTransactionData] = useState("");
@@ -343,6 +446,7 @@ function Test3({ navigation, route }) {
     );
 
     return (
+        // <ScrollView>
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>Transactions</Text>
@@ -367,9 +471,10 @@ function Test3({ navigation, route }) {
             <View style={styles.footer}>
                 <Text style={styles.footerAmount}> Total In: ₹ {totalIn}</Text>
                 <Text style={styles.footerAmount}> Total Out: ₹{totalOut}</Text>
-                <Text style={styles.footerText}>Available Balance: ₹{balance} </Text>
+                <Text style={styles.footerText}>Available Balance: ₹{Number(balance).toFixed(2)} </Text>
             </View>
         </View>
+        // </ScrollView>
     );
 };
 
@@ -444,12 +549,26 @@ const styles = StyleSheet.create({
         width: '100%',
         marginTop: 20,
     },
+    buttonContainerTab1: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+        marginTop: 20,
+    },
     button: {
         backgroundColor: '#51087E',
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 5,
         width: '48%',
+    },
+    buttonTab1: {
+        justifyContent: "space-around",
+        backgroundColor: '#51087E',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        width: '40%',
     },
     buttonText: {
         textAlign: 'center',

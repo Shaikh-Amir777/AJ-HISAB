@@ -14,6 +14,19 @@ export const postData = async (endpoint, data) => {
   }
 };
 
+export const deleteData = async (endpoint, data = {}) => {
+  try {
+    const response = await api.delete(endpoint, {
+      data: data // Some APIs allow data in the DELETE request
+    });
+    console.log('DELETE Response:', response.data);
+    return response;
+  } catch (error) {
+    console.error('Error deleting data:', error);
+    throw error;
+  }
+};
+
 
 
 // import axios from 'axios';

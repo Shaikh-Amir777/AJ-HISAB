@@ -5,61 +5,91 @@ import { postData } from './utils/apiService';
 export default function AdminDashboardScreen({ navigation }) {
     const [filterShow, setFilterShow] = useState(false);
     const [adminData, setAdminData] = useState([]);
-    console.log('adminData++++++++',adminData);
+    console.log('adminData++++++++', adminData);
     // State for the filters
     const [mobileNumber, setMobileNumber] = useState('');
     const [fullName, setFullName] = useState('');
     const [address, setAddress] = useState('');
-    
 
-    useEffect(()=>{
+
+    useEffect(() => {
+        const userData = async () => {
+            console.log("userDataTesting");
+            const data = {
+                feature: "USER_LIST",
+                userId: 21,
+            };
+            try {
+                console.log("Request data: ", data);
+                let adminDashboard = await postData('service', data);
+                console.log("adminDashboard response:", adminDashboard.data.data[0].address);
+                setAdminData(adminDashboard.data.data);
+                //   setBalance(userDashboard.data.data.balanceSummary.totalBalance);
+                //   setUserDashboardData(userDashboard.data.data);
+                // if (userDashboard.data.data){
+                //   console.log("userDashboard.data.data");
+                //   // setShowBalance()
+                //   navigation.navigate("TransactionsScreen", { userInfo: userDashboard.data.data });
+                // } 
+                // navigation.navigate(
+                //   role === "USER" ? "TransactionsScreen" : "AdminDashboardScreen",
+                //   { loginInfo: loginDataRes.data }
+                // );
+                // else {
+                //   Alert.alert('Error', 'Incorrect mobile number or password');
+                // }
+            } catch (error) {
+                console.error("Error fetching user dashboard data: ", error);
+                Alert.alert('Error', 'Failed to fetch data. Please try again later.');
+            }
+        };
         userData();
         // setAdminData(adminDashboard.data.data);
-    },[]);
+    }, []);
 
-    const userData = async () => {
-        console.log("userDataTesting");
-        const data = {
-          feature: "USER_LIST",
-          userId:1, 
-        };
-        try {
-          console.log("Request data: ", data);
-          let adminDashboard = await postData('service', data);
-          console.log("adminDashboard response:",adminDashboard.data.data[0].address);
-          setAdminData(adminDashboard.data.data);
-        //   setBalance(userDashboard.data.data.balanceSummary.totalBalance);
-        //   setUserDashboardData(userDashboard.data.data);
-          // if (userDashboard.data.data){
-          //   console.log("userDashboard.data.data");
-          //   // setShowBalance()
-          //   navigation.navigate("TransactionsScreen", { userInfo: userDashboard.data.data });
-          // } 
-          // navigation.navigate(
-          //   role === "USER" ? "TransactionsScreen" : "AdminDashboardScreen",
-          //   { loginInfo: loginDataRes.data }
-          // );
-          // else {
-          //   Alert.alert('Error', 'Incorrect mobile number or password');
-          // }
-        } catch (error) {
-          console.error("Error fetching user dashboard data: ", error);
-          Alert.alert('Error', 'Failed to fetch data. Please try again later.');
-        }
-      };
+    // const userData = async () => {
+    //     console.log("userDataTesting");
+    //     const data = {
+    //         feature: "USER_LIST",
+    //         userId: 21,
+    //     };
+    //     try {
+    //         console.log("Request data: ", data);
+    //         let adminDashboard = await postData('service', data);
+    //         console.log("adminDashboard response:", adminDashboard.data.data[0].address);
+    //         setAdminData(adminDashboard.data.data);
+    //         //   setBalance(userDashboard.data.data.balanceSummary.totalBalance);
+    //         //   setUserDashboardData(userDashboard.data.data);
+    //         // if (userDashboard.data.data){
+    //         //   console.log("userDashboard.data.data");
+    //         //   // setShowBalance()
+    //         //   navigation.navigate("TransactionsScreen", { userInfo: userDashboard.data.data });
+    //         // } 
+    //         // navigation.navigate(
+    //         //   role === "USER" ? "TransactionsScreen" : "AdminDashboardScreen",
+    //         //   { loginInfo: loginDataRes.data }
+    //         // );
+    //         // else {
+    //         //   Alert.alert('Error', 'Incorrect mobile number or password');
+    //         // }
+    //     } catch (error) {
+    //         console.error("Error fetching user dashboard data: ", error);
+    //         Alert.alert('Error', 'Failed to fetch data. Please try again later.');
+    //     }
+    // };
 
-     // Filter the data dynamically based on inputs
-  const filteredData = adminData.filter(item => {
-    // Perform the filtering based on non-empty inputs
-    const mobileMatch = mobileNumber ? item.mobileNumber.includes(mobileNumber) : true;
-    const nameMatch = fullName ? item.fullName.toLowerCase().includes(fullName.toLowerCase()) : true;
-    const addressMatch = address ? item.address.toLowerCase().includes(address.toLowerCase()) : true;
-    const userId = userId ? item.userId.toLowerCase().includes(userId.toLowerCase()) : true;
+    // Filter the data dynamically based on inputs
+    const filteredData = adminData.filter(item => {
+        // Perform the filtering based on non-empty inputs
+        const mobileMatch = mobileNumber ? item.mobileNumber.includes(mobileNumber) : true;
+        const nameMatch = fullName ? item.fullName.toLowerCase().includes(fullName.toLowerCase()) : true;
+        const addressMatch = address ? item.address.toLowerCase().includes(address.toLowerCase()) : true;
+        const userId = userId ? item.userId.toLowerCase().includes(userId.toLowerCase()) : true;
 
 
-    // Return true if all conditions match
-    return mobileMatch && nameMatch && addressMatch;
-  });
+        // Return true if all conditions match
+        return mobileMatch && nameMatch && addressMatch;
+    });
 
     return (
         <View style={styles.container}>
@@ -113,20 +143,31 @@ export default function AdminDashboardScreen({ navigation }) {
             <ScrollView style={styles.dataContainer}>
                 {filteredData.map(item => (
                     <TouchableOpacity
-                    key={item.id}
-                    onPress={() => navigation.navigate('UserInfo', {
-                      mobileNumber: item.mobileNumber ,
-                      fullName: item.fullName,
-                      address: item.address,
-                      password:item.password,
-                      userId:item.userId
-                    })}
+                        key={item.id}
+                        onPress={() => navigation.navigate('UserInfo', {
+                            mobileNumber: item.mobileNumber,
+                            fullName: item.fullName,
+                            address: item.address,
+                            password: item.password,
+                            userId: item.userId,
+                            status: item.status
+                        })}
                     >
                         <View key={item.id} style={styles.itemContainer}>
+                            <View>
                             <Text style={styles.itemText}>Mobile: {item.mobileNumber}</Text>
                             <Text style={styles.itemText}>Name: {item.fullName}</Text>
                             <Text style={styles.itemText}>Address: {item.address}</Text>
+                            </View>
+                        {/* <View style={styles.addRemoveContainer}>
+                            <TouchableOpacity style={styles.addRemove}
+                            // onPress={() => handleRemove(item.id)} // Define your remove function
+                            >
+                                <Text style={styles.addRemoveText}>Remove</Text>
+                            </TouchableOpacity>
+                        </View> */}
                         </View>
+
                     </TouchableOpacity>
                 ))}
             </ScrollView>
@@ -166,13 +207,16 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     itemContainer: {
+        flex: 1,
         padding: 12,
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
         marginBottom: 8,
         backgroundColor: 'white',
         borderRadius: 4,
+
     },
+
     itemText: {
         color: "black",
         fontSize: 20,
@@ -183,8 +227,24 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     addButton: {
+        color: "white",
         width: 150,
         alignItems: "center",
+        backgroundColor: '#51087E',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 4,
+    },
+    addRemoveContainer: {
+        marginLeft: 'auto',            // Push the button to the right
+        alignItems: 'center',
+    },
+    addRemove: {
+        // flexDirection:"row",
+
+        color: "white",
+        width: 85,
+        // justifyContent: "flex-end",
         backgroundColor: '#51087E',
         paddingVertical: 8,
         paddingHorizontal: 16,
@@ -193,6 +253,11 @@ const styles = StyleSheet.create({
     addButtonText: {
         color: '#fff',
         // textAlign:"center",
+        fontSize: 14,
+    },
+    addRemoveText: {
+        color: '#fff',
+        textAlign: "center",
         fontSize: 14,
     },
 });

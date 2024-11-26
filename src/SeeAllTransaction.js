@@ -96,9 +96,9 @@ export default function TransactionsScreen({ route,navigation }) {
                 keyExtractor={item => item.id}
             />
             <View style={styles.footer}>
-                <Text style={styles.footerAmount}> Total In: ₹{inTotalAmount} </Text>
-                <Text style={styles.footerAmount}> Total Out: ₹{outTotalAmount}</Text>
-                <Text style={styles.footerText}>Available Balance: ₹{totalBalanceAmount} </Text>
+                <Text style={styles.footerAmount}> Total In: ₹{inTotalAmount.toFixed(2)} </Text>
+                <Text style={styles.footerAmount}> Total Out: ₹{outTotalAmount.toFixed(2)}</Text>
+                <Text style={styles.footerText}>Available Balance: ₹{totalBalanceAmount.toFixed(2)} </Text>
             </View>
         </View>
     );

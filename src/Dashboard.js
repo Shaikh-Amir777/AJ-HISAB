@@ -15,7 +15,7 @@ import { postData } from './utils/apiService';
   const [userId, setuserId] = useState(customerData);
   console.log("customerId-----",userId)
   const [userDashboardData, setUserDashboardData] = useState(0);
-  console.log("Balance*******",Balance);
+  console.log("Balance*******",Balance.toFixed(2));
 
   useEffect(()=>{
     handleTransaction();
@@ -72,7 +72,7 @@ import { postData } from './utils/apiService';
         <Text style={styles.welcomeText}>Welcome, {loginInfo.data.fullName}</Text>
         <Text style={styles.balanceLabel}>Your Available Balance is</Text>
         <TouchableOpacity onPress={toggleBalance}>
-          <Text style={styles.balanceText}>{showBalance ? `${Balance}` : "XXXX"}</Text>
+          <Text style={styles.balanceText}>{showBalance ? `${Balance.toFixed(2)}` : "XXXX"}</Text>
         </TouchableOpacity>
          <TouchableOpacity onPress={() => navigation.navigate('TransactionsScreen', { userInfo: userDashboardData })}>
          {/* <TouchableOpacity onPress={() => navigation.navigate('TransactionsScreen', { userInfo: userDashboard.data.data })}> */}
@@ -89,13 +89,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'top',
     alignItems: 'center',
-    padding: 20,
+    padding: 0,
     backgroundColor: '#f0f0f0',
   },
   box: {
     width: '95%',
-    padding: 20,
-    marginTop:50,
+    paddingBottom: 20,
+    paddingTop: 20,
+    marginTop:15,
     alignItems:"",
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -134,8 +135,8 @@ const styles = StyleSheet.create({
   },
   image: {
     marginTop: 0,
-    marginBottom:20,
-    width: 390,
-    height: 400,
+    marginBottom:10,
+    width: 300,
+    height: 300,
   },
 });
