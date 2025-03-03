@@ -1,5 +1,6 @@
 package com.jewelers
 
+import com.microsoft.codepush.react.CodePush;
 import android.app.Application
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
@@ -40,4 +41,9 @@ class MainApplication : Application(), ReactApplication {
       load()
     }
   }
+  
+  @Override
+    protected String getJSBundleFile() {
+    return CodePush.getJSBundleFile();
+    }
 }
