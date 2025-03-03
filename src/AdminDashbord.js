@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { postData } from './utils/apiService';
+import Share from 'react-native-share';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+// import Icon from 'react-native-vector-icons/material-icons';
 
 export default function AdminDashboardScreen({ navigation }) {
     const [filterShow, setFilterShow] = useState(false);
@@ -11,18 +15,31 @@ export default function AdminDashboardScreen({ navigation }) {
     const [fullName, setFullName] = useState('');
     const [address, setAddress] = useState('');
 
+    const share = () => {
+        const options = {
+            title: "AJ HISAB",
+            message: "Any problem to contact afjal bhai",
+            url:"https://github.com/Shaikh-Amir777/AJ-HISAB/releases/download/v1.0.0/app-release.apk"
+        }
+
+        Share.open(options)
+            .then(res => console.log(res))
+            .catch(err => console.log(err))
+    }
+
 
     useEffect(() => {
         const userData = async () => {
             console.log("userDataTesting");
             const data = {
                 feature: "USER_LIST",
-                userId: 21,
+                userId: 33,
+                // role: "ADMIN"
             };
             try {
                 console.log("Request data: ", data);
                 let adminDashboard = await postData('service', data);
-                console.log("adminDashboard response:", adminDashboard.data.data[0].address);
+                // console.log("adminDashboard response:", adminDashboard.data.data[0].address);
                 setAdminData(adminDashboard.data.data);
                 //   setBalance(userDashboard.data.data.balanceSummary.totalBalance);
                 //   setUserDashboardData(userDashboard.data.data);
@@ -102,6 +119,18 @@ export default function AdminDashboardScreen({ navigation }) {
                 >
                     <Text style={styles.addButtonText}>Filter All Data</Text>
                 </TouchableOpacity>
+
+                <TouchableOpacity
+                    // style={styles.addButton}
+                    onPress={share}
+                >
+                    {/* sharealt */}
+                    {/* <AntDesign name= "ShareAltOutlined" size= {30} color= 'red'/> */}
+                    {/* <AntDesign name="sharealt" size={30} color="red" /> */}
+                    <FontAwesome name="share-alt" size={30} color="#51087E" />
+                    {/* <Text style={styles.addButtonText}>Share App</Text> */}
+                </TouchableOpacity>
+
                 <TouchableOpacity
                     style={styles.addButton}
                     onPress={() => navigation.navigate('UserAdd')}
@@ -155,11 +184,11 @@ export default function AdminDashboardScreen({ navigation }) {
                     >
                         <View key={item.id} style={styles.itemContainer}>
                             <View>
-                            <Text style={styles.itemText}>Mobile: {item.mobileNumber}</Text>
-                            <Text style={styles.itemText}>Name: {item.fullName}</Text>
-                            <Text style={styles.itemText}>Address: {item.address}</Text>
+                                <Text style={styles.itemText}>Mobile: {item.mobileNumber}</Text>
+                                <Text style={styles.itemText}>Name: {item.fullName}</Text>
+                                <Text style={styles.itemText}>Address: {item.address}</Text>
                             </View>
-                        {/* <View style={styles.addRemoveContainer}>
+                            {/* <View style={styles.addRemoveContainer}>
                             <TouchableOpacity style={styles.addRemove}
                             // onPress={() => handleRemove(item.id)} // Define your remove function
                             >
@@ -186,7 +215,7 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: "space-evenly",
         marginBottom: 16,
         // alignItems: 'center',
         // marginBottom: 20,
@@ -228,7 +257,7 @@ const styles = StyleSheet.create({
     },
     addButton: {
         color: "white",
-        width: 150,
+        width: 120,
         alignItems: "center",
         backgroundColor: '#51087E',
         paddingVertical: 8,

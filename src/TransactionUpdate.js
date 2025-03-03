@@ -1,0 +1,372 @@
+import React, { useEffect, useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+// import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Alert, ScrollView } from 'react-native';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { deleteData, postData } from './utils/apiService';
+
+function Transaction_Update({ navigation, route, transaction }) {
+    const { mobileNumber, fullName, address, userId } = route.params;
+    console.log("route.transaction,item*****", route.params.transaction);
+    // console.log("transaction,item*****", transaction);
+
+    const [editAmount, setEditAmount] = useState('');
+    const [editIn, setEiditIn] = useState(route.params.transaction.IN);
+    const [editOut, setEiditOut] = useState(route.params.transaction.OUT);
+    const [editComment, setEiditComment] = useState(route.params.transaction.comment);
+    const [transactionId, setTransactionId] = useState(route.params.transaction.id);
+    // const [selectId, setSelectId] = useState('');
+    const [transactionType, setTransactionType] = useState('');
+
+    console.log("selectDate++++++", transactionId);
+    console.log("selectDate++++++", editComment);
+    console.log("selectDate++++++", transactionType);
+    console.log("selectDate++++++", editAmount);
+
+    const date = new Date();
+    const formatDate = `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
+
+    console.log(formatDate);
+    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [selectDate, setSelectDate] = useState(route.params.transaction.transactionDate);
+
+    console.log("selectDate++++++", selectDate);
+
+    const showDatePicker = () => setDatePickerVisibility(true);
+    const hideDatePicker = () => setDatePickerVisibility(false);
+
+    const handleDateConfirm = (date) => {
+        const dt = new Date(date);
+        const formattedDate = dt.toISOString().split('T')[0];
+        // const formattedDate = dt.toISOString().split('T')[0].split('-').reverse().join('/');
+        setSelectDate(formattedDate);
+        hideDatePicker();
+    };
+
+    useEffect(() => {
+        retrieveLoginInfo();
+    }, [])
+
+
+    const retrieveLoginInfo = async () => {
+        try {
+            const loginInfo = await AsyncStorage.getItem('loginInfo');
+            if (loginInfo !== null) {
+                // We have data!!
+                const parsedLoginInfo = JSON.parse(loginInfo);
+                // setSelectId(parsedLoginInfo.data.id);
+                console.log("Retrieved login info:", parsedLoginInfo);
+                // Use the login info here...
+            }
+        } catch (error) {
+            console.error("Error retrieving login info: ", error);
+        }
+    };
+
+
+    const handleSubmit = async () => {
+        console.log(" testing ");
+        // navigation.navigate("AdminDashboardScreen");
+        const data = {
+            feature: "TRANSACTION_UPDATE",
+            newtransactionType: transactionType,
+            newDate: selectDate,
+            // "2024-09-24",
+            // newIn: editIn,
+            // newOut: editOut,
+            newAmount: editAmount,
+            newComment: editComment,
+            id: transactionId
+        }
+        console.log(" user Data ", data);
+
+        let usertransation = await postData('service', data);
+        console.log(" usertransation ----- ", usertransation);
+        if (usertransation) {
+            navigation.navigate("AdminDashboardScreen"); // Correct navigation here
+        }
+        else {
+            console.log("post Data not working");
+        }
+    };
+
+    return (
+        <ScrollView>
+        <View style={styles.container}>
+            <View style={styles.inputRow}>
+                <Text style={styles.label}>IN:</Text>
+                <TextInput
+                    style={styles.input}
+                    value={route.params.transaction.IN}
+                    // onChangeText={setEiditIn}
+                    editable={false}
+                />
+            </View>
+            <View style={styles.inputRow}>
+                <Text style={styles.label}>OUT:</Text>
+                <TextInput
+                    style={styles.input}
+                    value={route.params.transaction.OUT}
+                    // onChangeText={setEiditOut}
+                    editable={false}
+
+                />
+            </View>
+            {/* <View style={styles.inputRow}>
+                <Text style={styles.label}>Address:</Text>
+                <TextInput
+                    style={styles.input}
+                    value={address}
+                    editable={false}
+                />
+            </View> */}
+            <View style={styles.inputRow}>
+                <Text style={styles.label}>Date:</Text>
+                <TouchableOpacity onPress={showDatePicker} style={styles.input}>
+                    <Text style={styles.dateText}>{selectDate}</Text>
+                </TouchableOpacity>
+                <DateTimePickerModal
+                    isVisible={isDatePickerVisible}
+                    mode="date"
+                    onConfirm={handleDateConfirm}
+                    onCancel={hideDatePicker}
+                />
+            </View>
+            <View style={styles.inputRow}>
+                <Text style={styles.label}>Enter Amount:</Text>
+                <TextInput
+                    style={styles.input}
+                    value={editAmount}
+                    onChangeText={setEditAmount}
+                    keyboardType="numeric"
+                    placeholderTextColor="#51087E"
+                    placeholder="Amount"
+                />
+            </View>
+            <View style={styles.inputRow}>
+                <Text style={styles.label}>Comment:</Text>
+                <TextInput
+                    style={styles.input}
+                    value={editComment}
+                    onChangeText={setEiditComment}
+                    placeholderTextColor="#51087E"
+                    placeholder="Comment"
+                />
+            </View>
+            <View style={styles.inputRow}>
+                <Text style={styles.label}>Transaction Type:</Text>
+                <View style={styles.radioContainer}>
+                    <TouchableOpacity
+                        style={styles.radioButton}
+                        onPress={() => setTransactionType('IN')}
+                    >
+                        <View style={styles.outerCircle}>
+                            {transactionType === 'IN' && <View style={styles.innerCircle} />}
+                        </View>
+                        <Text style={styles.radioText}>IN</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.radioButton}
+                        onPress={() => setTransactionType('OUT')}
+                    >
+                        <View style={styles.outerCircle}>
+                            {transactionType === 'OUT' && <View style={styles.innerCircle} />}
+                        </View>
+                        <Text style={styles.radioText}>OUT</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.button} onPress={() => handleSubmit()}>
+
+                    {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AdminDashboardScreen")}> */}
+                    <Text style={styles.buttonText}>Update Transaction</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+        </ScrollView>
+    );
+}
+export default Transaction_Update;
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 20,
+        marginBottom: 10,
+    },
+    label: {
+        fontSize: 18,
+        color: '#333',
+        width: 100
+    },
+    inputRow: {
+        // width:'100%',
+        color: '#51087E',
+        flexDirection: 'row',
+        marginBottom: 20,
+        alignItems: 'center',
+    },
+    input: {
+        width: '65%',
+        color: '#51087E',
+        marginLeft: 0,
+        alignSelf: 'center',
+        backgroundColor: "white",
+        borderWidth: 1,
+        borderColor: '#51087E',
+        borderRadius: 5,
+        padding: 8,
+        marginBottom: 10,
+        fontSize: 18,
+    },
+
+    dateText: {
+        color: '#51087E',   // Replace with desired color
+        fontSize: 16,       // Adjust font size if needed
+    },
+    radioContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        flex: 2,
+    },
+    radioButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    radioText: {
+        color: "black",
+        marginLeft: 10
+    },
+    outerCircle: {
+        height: 24,
+        width: 24,
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: '#51087E',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    innerCircle: {
+        height: 12,
+        width: 12,
+        borderRadius: 6,
+        backgroundColor: '#51087E',
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        width: '100%',
+        marginTop: 20,
+    },
+    buttonContainerTab1: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+        marginTop: 20,
+    },
+    button: {
+        backgroundColor: '#51087E',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        width: '48%',
+    },
+    buttonTab1: {
+        justifyContent: "space-around",
+        backgroundColor: '#51087E',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        width: '40%',
+    },
+    buttonText: {
+        textAlign: 'center',
+        color: '#FFFFFF',
+        fontSize: 13,
+    },
+
+
+    container1: {
+        flex: 1,
+        padding: 20,
+        backgroundColor: '#f8f8f8',
+    },
+    header: {
+
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    title: {
+        color: "black",
+        fontSize: 24,
+        fontWeight: 'bold',
+    },
+    addButton: {
+        backgroundColor: '#007BFF',
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 5,
+    },
+    addButtonText: {
+        color: '#000000',
+        fontSize: 16,
+    },
+    tableHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        backgroundColor: '#51087E',
+        paddingVertical: 10,
+        paddingHorizontal: 5,
+        borderRadius: 5,
+        marginBottom: 10,
+    },
+    headerCell: {
+        color: "white",
+        fontSize: 18,
+        fontWeight: 'bold',
+        flex: 1,
+        textAlign: 'center',
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingVertical: 10,
+        paddingHorizontal: 5,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+    },
+    cell1: {
+        color: "green",
+        fontSize: 14,
+        flex: 1,
+        textAlign: 'center',
+    },
+    cell2: {
+        color: "red",
+        fontSize: 14,
+        flex: 1,
+        textAlign: 'center',
+    },
+    cell: {
+        color: "black",
+        fontSize: 14,
+        flex: 1,
+        textAlign: 'center',
+    },
+    footerAmount: {
+        color: "black",
+        fontSize: 24,
+        fontWeight: 'bold',
+    },
+    footerText: {
+        color: "black",
+        fontSize: 24,
+        fontWeight: 'bold',
+    }
+
+
+});

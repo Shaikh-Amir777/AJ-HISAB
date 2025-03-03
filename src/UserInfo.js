@@ -10,16 +10,16 @@ const Tab = createMaterialTopTabNavigator();
 
 export default function UserInfo({ navigation, route }) {
 
-    const { mobileNumber, fullName, address, password, userId, status } = route.params;
+    const { mobileNumber, fullName, address, password, userId, status, role } = route.params;
     const data = route.params;
-    console.log("data**UserInfo**tab1", data.status)
+    console.log("data**UserInfo**tab1", data)
 
     return (
         <Tab.Navigator>
             <Tab.Screen
                 name="UserInfo"
                 component={UserInfo1}
-                initialParams={{ mobileNumber, fullName, address, password, userId, status }}
+                initialParams={{ mobileNumber, fullName, address, password, userId, status, role }}
             />
             <Tab.Screen
                 name="Add Transaction"
@@ -37,10 +37,17 @@ export default function UserInfo({ navigation, route }) {
 }
 
 function UserInfo1({ navigation, route }) {
-    const { mobileNumber, fullName, address, password, userId, status } = route.params;
+    const { mobileNumber, fullName, address, password, userId } = route.params;
     const inActiveData = route.params.status;
+    const mobileNumberAdmin = route.params.mobileNumber;
+    console.log("mobileNumberAdmin********", mobileNumberAdmin)
     console.log("inActiveData********", inActiveData)
+
     console.log("route.params****UserInfo1*", route.params);
+    const [selectRole, setSelectRole] = useState('');
+    // console.log("selectRole*******",selectRole);
+
+
     const [editPassword, setEditPassword] = useState(password);
     const [editFullName, setEiditFullName] = useState(fullName);
     const [editAddress, setEditAddress] = useState(address);
@@ -48,6 +55,27 @@ function UserInfo1({ navigation, route }) {
     const [newStatus, setNewStatus] = useState(inActiveData);
 
     console.log("newStatus*", newStatus);
+
+    // useEffect(() => {
+    // console.log("retrieveLoginInfo********___________12345");
+    //         retrieveLoginInfo();
+    //     }, [])
+
+    // const retrieveLoginInfo = async () => {
+    //     try {
+    //         const loginInfo = await AsyncStorage.getItem('loginInfo');
+    //         if (loginInfo !== null) {
+    //             // We have data!!
+    //             const parsedLoginInfo = JSON.parse(loginInfo);
+    //             setSelectRole(parsedLoginInfo.data.role);
+    //             console.log("Retrieved login info:", parsedLoginInfo);
+    //             // Use the login info here...
+    //         }
+    //     } catch (error) {
+    //         console.error("Error retrieving login info: ", error);
+    //     }
+    // };
+
 
     const updateUser = async () => {
         // console.log("newPassword12345678");
@@ -129,10 +157,10 @@ function UserInfo1({ navigation, route }) {
             // If delete was successful, you can navigate or give success feedback
             if (response) {
                 // Alert.alert(
-                    // "Are you sure?", // Alert title
-                    navigation.navigate("AdminDashboardScreen") // Action for Okay button
-            // )
-        }
+                // "Are you sure?", // Alert title
+                navigation.navigate("AdminDashboardScreen") // Action for Okay button
+                // )
+            }
 
         } catch (error) {
             console.error("Error deleting data:", error.response?.data || error.message);
@@ -196,26 +224,48 @@ function UserInfo1({ navigation, route }) {
                         </View>
                         <Text style={styles.radioText}>ACTIVE</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.radioButton}
-                        onPress={() => setNewStatus('INACTIVE')}
-                    >
-                        <View style={styles.outerCircle}>
-                            {newStatus === 'INACTIVE' && <View style={styles.innerCircle} />}
-                        </View>
-                        <Text style={styles.radioText}>INACTIVE</Text>
-                    </TouchableOpacity>
+                    {mobileNumberAdmin && mobileNumberAdmin !== "123" && (
+                        <TouchableOpacity
+                            style={styles.radioButton}
+                            onPress={() => setNewStatus('INACTIVE')}
+                        >
+                            <View style={styles.outerCircle}>
+                                {newStatus === 'INACTIVE' && <View style={styles.innerCircle} />}
+                            </View>
+                            <Text style={styles.radioText}>INACTIVE</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
 
             <View style={styles.buttonContainerTab1}>
                 {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AdminDashboardScreen")}> */}
-                <TouchableOpacity style={styles.buttonTab1} onPress={updateUser}>
+                {/* <TouchableOpacity style={styles.buttonTab1} onPress={updateUser}>
                     <Text style={styles.buttonText}>Update</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity style={styles.buttonTab1} onPress={removeData}>
                     <Text style={styles.buttonText}>Remove</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
+
+
+                {mobileNumberAdmin !== "123" ? (
+                    <>
+                        <TouchableOpacity style={styles.buttonTab1} onPress={updateUser}>
+                            <Text style={styles.buttonText}>Update</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.buttonTab1} onPress={removeData}>
+                            <Text style={styles.buttonText}>Remove</Text>
+                        </TouchableOpacity>
+                    </>
+                ) : (
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <TouchableOpacity style={styles.buttonTab1} onPress={updateUser}>
+                            <Text style={styles.buttonText}>User Update</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </View>
         </View>
     );
@@ -298,95 +348,95 @@ function Add_Transaction2({ navigation, route }) {
 
     return (
         <ScrollView>
-        <View style={styles.container}>
-            <View style={styles.inputRow}>
-                <Text style={styles.label}>Name:</Text>
-                <TextInput
-                    style={styles.input}
-                    value={fullName}
-                    editable={false}
-                />
-            </View>
-            <View style={styles.inputRow}>
-                <Text style={styles.label}>Mobile:</Text>
-                <TextInput
-                    style={styles.input}
-                    value={mobileNumber}
-                    editable={false}
-                />
-            </View>
-            <View style={styles.inputRow}>
-                <Text style={styles.label}>Address:</Text>
-                <TextInput
-                    style={styles.input}
-                    value={address}
-                    editable={false}
-                />
-            </View>
-            <View style={styles.inputRow}>
-                <Text style={styles.label}>Date:</Text>
-                <TouchableOpacity onPress={showDatePicker} style={styles.input}>
-                    <Text style={styles.dateText}>{selectDate}</Text>
-                </TouchableOpacity>
-                <DateTimePickerModal
-                    isVisible={isDatePickerVisible}
-                    mode="date"
-                    onConfirm={handleDateConfirm}
-                    onCancel={hideDatePicker}
-                />
-            </View>
-            <View style={styles.inputRow}>
-                <Text style={styles.label}>Enter Amount:</Text>
-                <TextInput
-                    style={styles.input}
-                    value={amount}
-                    onChangeText={setAmount}
-                    keyboardType="numeric"
-                    placeholderTextColor="#51087E"
-                    placeholder="Amount"
-                />
-            </View>
-            <View style={styles.inputRow}>
-                <Text style={styles.label}>Comment:</Text>
-                <TextInput
-                    style={styles.input}
-                    value={comment}
-                    onChangeText={setComment}
-                    placeholderTextColor="#51087E"
-                    placeholder="Comment"
-                />
-            </View>
-            <View style={styles.inputRow}>
-                <Text style={styles.label}>Transaction Type:</Text>
-                <View style={styles.radioContainer}>
-                    <TouchableOpacity
-                        style={styles.radioButton}
-                        onPress={() => setTransactionType('IN')}
-                    >
-                        <View style={styles.outerCircle}>
-                            {transactionType === 'IN' && <View style={styles.innerCircle} />}
-                        </View>
-                        <Text style={styles.radioText}>IN</Text>
+            <View style={styles.container}>
+                <View style={styles.inputRow}>
+                    <Text style={styles.label}>Name:</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={fullName}
+                        editable={false}
+                    />
+                </View>
+                <View style={styles.inputRow}>
+                    <Text style={styles.label}>Mobile:</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={mobileNumber}
+                        editable={false}
+                    />
+                </View>
+                <View style={styles.inputRow}>
+                    <Text style={styles.label}>Address:</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={address}
+                        editable={false}
+                    />
+                </View>
+                <View style={styles.inputRow}>
+                    <Text style={styles.label}>Date:</Text>
+                    <TouchableOpacity onPress={showDatePicker} style={styles.input}>
+                        <Text style={styles.dateText}>{selectDate}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.radioButton}
-                        onPress={() => setTransactionType('OUT')}
-                    >
-                        <View style={styles.outerCircle}>
-                            {transactionType === 'OUT' && <View style={styles.innerCircle} />}
-                        </View>
-                        <Text style={styles.radioText}>OUT</Text>
+                    <DateTimePickerModal
+                        isVisible={isDatePickerVisible}
+                        mode="date"
+                        onConfirm={handleDateConfirm}
+                        onCancel={hideDatePicker}
+                    />
+                </View>
+                <View style={styles.inputRow}>
+                    <Text style={styles.label}>Enter Amount:</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={amount}
+                        onChangeText={setAmount}
+                        keyboardType="numeric"
+                        placeholderTextColor="#51087E"
+                        placeholder="Amount"
+                    />
+                </View>
+                <View style={styles.inputRow}>
+                    <Text style={styles.label}>Comment:</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={comment}
+                        onChangeText={setComment}
+                        placeholderTextColor="#51087E"
+                        placeholder="Comment"
+                    />
+                </View>
+                <View style={styles.inputRow}>
+                    <Text style={styles.label}>Transaction Type:</Text>
+                    <View style={styles.radioContainer}>
+                        <TouchableOpacity
+                            style={styles.radioButton}
+                            onPress={() => setTransactionType('IN')}
+                        >
+                            <View style={styles.outerCircle}>
+                                {transactionType === 'IN' && <View style={styles.innerCircle} />}
+                            </View>
+                            <Text style={styles.radioText}>IN</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.radioButton}
+                            onPress={() => setTransactionType('OUT')}
+                        >
+                            <View style={styles.outerCircle}>
+                                {transactionType === 'OUT' && <View style={styles.innerCircle} />}
+                            </View>
+                            <Text style={styles.radioText}>OUT</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.button} onPress={() => handleSubmit()}>
+
+                        {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AdminDashboardScreen")}> */}
+                        <Text style={styles.buttonText}>Submit</Text>
                     </TouchableOpacity>
                 </View>
             </View>
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={() => handleSubmit()}>
-
-                    {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AdminDashboardScreen")}> */}
-                    <Text style={styles.buttonText}>Submit</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
         </ScrollView>
     );
 }
@@ -395,7 +445,7 @@ function Transaction_Details3({ navigation, route }) {
     // console.log("route******test3", route.params.userId);
     const userId = route.params.userId
     const [userTransactionData, setUserTransactionData] = useState("");
-    // console.log("userTransactionData******",userTransactionData.balanceSummary)
+    console.log("userTransactionData******", userTransactionData)
     const [balance, setBalance] = useState("");
     const [totalIn, setTotalIn] = useState("");
     const [totalOut, setTotalOut] = useState("");
@@ -437,8 +487,16 @@ function Transaction_Details3({ navigation, route }) {
     };
 
     const renderTransaction = ({ item }) => (
+
         <View style={styles.row}>
-            <Text style={styles.cell}>{item.transactionDate}</Text>
+            <TouchableOpacity
+                onPress={() => navigation.navigate('Transaction Update', { transaction: item })}
+            >
+                <Text style={[styles.cell, { color: 'blue', textDecorationLine: 'underline' }]}>
+                    {item.transactionDate}
+                </Text>
+            </TouchableOpacity>
+            {/* <Text style={styles.cell}>{item.transactionDate}</Text> */}
             <Text style={styles.cell}>{item.comment}</Text>
             <Text style={styles.cell1}>{item.IN === "0" ? "-" : `${item.IN > 0 ? "+ " : " "}${item.IN}`}</Text>
             <Text style={styles.cell2}>{item.OUT === "0" ? "-" : `${item.OUT > 0 ? "- " : " "}${item.OUT}`}</Text>

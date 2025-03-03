@@ -6,7 +6,7 @@ import api from './api'; // Assuming you have the axios instance in 'api.js'
 export const postData = async (endpoint, data) => {
   try {
     const response = await api.post(endpoint, data); // Dynamic endpoint
-    // console.log('POST Response:', response.data);
+    console.log('POST Response:', response.data);
     return response;
   } catch (error) {
     console.error('Error posting data:', error);
