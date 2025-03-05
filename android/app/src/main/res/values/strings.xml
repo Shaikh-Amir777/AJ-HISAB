@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">AJ HISAB</string>
-    <string name="CodePushDeploymentKey">YOUR_DEPLOYMENT_KEY_HERE</string>
+    <!-- <string name="CodePushDeploymentKey">YOUR_DEPLOYMENT_KEY_HERE</string> -->
 </resources>

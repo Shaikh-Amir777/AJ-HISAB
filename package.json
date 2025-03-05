@@ -18,7 +18,6 @@
     "axios": "^1.7.4",
     "react": "18.2.0",
     "react-native": "0.74.5",
-    "react-native-code-push": "^9.0.1",
     "react-native-modal-datetime-picker": "^18.0.0",
     "react-native-pager-view": "^6.4.1",
     "react-native-paper": "^5.12.5",

@@ -1,9 +1,8 @@
 import React from 'react';
-import CodePush from "react-native-code-push";
 import { StatusBar, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import LoginScreen from './src/LoginScreen';
 import OTPScreen from './src/OTPScreen';
 import HomeScreen from './src/HomeScreen';
@@ -17,29 +16,20 @@ import UserInfo from './src/UserInfo';
 import Transaction_Update from './src/TransactionUpdate';
 
 const Stack = createNativeStackNavigator();
-let codePushOptions = { checkFrequency: CodePush.CheckFrequency.ON_APP_START };
 
-function App() {
-
-  useEffect(() => {
-    CodePush.sync({
-      updateDialog: true,
-      installMode: CodePush.InstallMode.IMMEDIATE,
-    });
-  }, []);
-
+export default function App() {
   return (
-
+    
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Login"
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: "#51087E",
-          },
-          headerTintColor: "white"
-        }}
-      >
+      <Stack.Navigator 
+      initialRouteName="Login" 
+      screenOptions={{
+        headerStyle:{
+          backgroundColor: "#51087E",
+        },
+        headerTintColor:"white"
+    }}
+    >
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="ForgetPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="OTP" component={OTPScreen} />
@@ -57,5 +47,3 @@ function App() {
     </NavigationContainer>
   );
 }
-
-export default CodePush(codePushOptions)(App);
