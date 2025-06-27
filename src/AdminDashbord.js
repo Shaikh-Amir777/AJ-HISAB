@@ -20,7 +20,8 @@ export default function AdminDashboardScreen({ navigation }) {
             title: "AJ HISAB",
             message: "Any problem to contact afjal bhai",
             // https://drive.google.com/file/d/1BwvxBACfaMZ7XhtkHuC2NUKwXLVQduiV/view?usp=sharing
-            url:"https://drive.google.com/file/d/1BwvxBACfaMZ7XhtkHuC2NUKwXLVQduiV/view?usp=sharing"
+            // url:"https://drive.google.com/file/d/1BwvxBACfaMZ7XhtkHuC2NUKwXLVQduiV/view?usp=sharing"
+           url: "https://drive.google.com/uc?export=download&id=1-5i08lV7Zw98_mmNXV4AIm5jcCgsx-YP"
         }
 
         Share.open({...options})
