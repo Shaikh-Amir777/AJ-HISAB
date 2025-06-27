@@ -19,7 +19,8 @@ export default function AdminDashboardScreen({ navigation }) {
         const options = {
             title: "AJ HISAB",
             message: "Any problem to contact afjal bhai",
-            url:"https://github.com/Shaikh-Amir777/AJ-HISAB/releases/download/v2.0.0/app-release2.apk"
+            // https://drive.google.com/file/d/1BwvxBACfaMZ7XhtkHuC2NUKwXLVQduiV/view?usp=sharing
+            url:"https://drive.google.com/file/d/1BwvxBACfaMZ7XhtkHuC2NUKwXLVQduiV/view?usp=sharing"
         }
 
         Share.open(options)
