@@ -4,6 +4,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Image, TextInput, Alert, Stat
 import { postData } from './utils/apiService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getActiveChildNavigationOptions } from 'react-navigation';
+// import { ActivityIndicator,BarIndicator } from 'react-native';
+import { BarIndicator } from 'react-native-indicators';
 // import { Image } from 'react-native-paper/lib/typescript/components/Avatar/Avatar';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -14,58 +16,102 @@ export default function LoginScreen({ navigation }) {
   const [customerData, setCustomerData] = useState(null); // Add state for customer data
   console.log("mobileNumber, password)********", mobileNumber, password);
 
+  const [loading, setLoading] = useState(false);
+
+
+  // const handleSubmit = async () => {
+  //   console.log("Attempting Login...");
+
+  //   const data = {
+  //     feature: "LOGIN",
+  //     mobileNumber: mobileNumber,
+  //     password: password,
+  //   };
+
+  //   try {
+  //     let loginDataRes = await postData('service', data);
+  //     console.log("loginDataRes----- ", loginDataRes.data);
+
+  //     if(loginDataRes.data && loginDataRes.data.data.status === 'ACTIVE') {
+  //       // Store login data in local storage
+  //       await AsyncStorage.setItem('loginInfo', JSON.stringify(loginDataRes.data));
+
+  //       // Navigate to Dashboard with loginInfo
+  //       navigation.navigate("Dashboard", { loginInfo: loginDataRes.data });
+  //       console.log("Login successful.");
+  //     }
+  //     else if (loginDataRes.data.data.status === "null") {
+  //       Alert.alert("Login Failed", "Please enter the correct mobile number and password.", [
+  //         { text: "OK", onPress: () => navigation.navigate("Login") }
+  //       ]);
+  //     }
+  //     else {
+  //       // Show alert prompting for correct credentials and redirect to login page on failure
+  //       Alert.alert("Login Failed", "Please enter the correct mobile number and password.", [
+  //         { text: "OK", onPress: () => navigation.navigate("Login") }
+  //       ]);
+  //     }
+  //   } catch (error) {
+  //     if (error.response) {
+  //       console.error("Server responded with an error:", error.response.status);
+  //       console.error("Response data:", error.response.data);
+
+  //       if (error.response.status === 502) {
+  //         Alert.alert("Server is currently unavailable. Please try again later.");
+  //       } else {
+  //         Alert.alert("Login failed: " + error.response.data.message);
+  //       }
+  //     } else if (error.request) {
+  //       console.error("No response received:", error.request);
+  //       Alert.alert("Network error. Please check your internet connection.");
+  //     } else {
+  //       console.error("Error during login:", error.message);
+  //       Alert.alert("An unexpected error occurred: " + error.message);
+  //     }
+  //   }
+  // };
 
   const handleSubmit = async () => {
-    console.log("Attempting Login...");
+  console.log("Attempting Login...");
+  setLoading(true); // Start loading
 
-    const data = {
-      feature: "LOGIN",
-      mobileNumber: mobileNumber,
-      password: password,
-    };
-
-    try {
-      let loginDataRes = await postData('service', data);
-      console.log("loginDataRes----- ", loginDataRes.data);
-
-      if(loginDataRes.data && loginDataRes.data.data.status === 'ACTIVE') {
-        // Store login data in local storage
-        await AsyncStorage.setItem('loginInfo', JSON.stringify(loginDataRes.data));
-
-        // Navigate to Dashboard with loginInfo
-        navigation.navigate("Dashboard", { loginInfo: loginDataRes.data });
-        console.log("Login successful.");
-      }
-      else if (loginDataRes.data.data.status === "null") {
-        Alert.alert("Login Failed", "Please enter the correct mobile number and password.", [
-          { text: "OK", onPress: () => navigation.navigate("Login") }
-        ]);
-      }
-      else {
-        // Show alert prompting for correct credentials and redirect to login page on failure
-        Alert.alert("Login Failed", "Please enter the correct mobile number and password.", [
-          { text: "OK", onPress: () => navigation.navigate("Login") }
-        ]);
-      }
-    } catch (error) {
-      if (error.response) {
-        console.error("Server responded with an error:", error.response.status);
-        console.error("Response data:", error.response.data);
-
-        if (error.response.status === 502) {
-          Alert.alert("Server is currently unavailable. Please try again later.");
-        } else {
-          Alert.alert("Login failed: " + error.response.data.message);
-        }
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-        Alert.alert("Network error. Please check your internet connection.");
-      } else {
-        console.error("Error during login:", error.message);
-        Alert.alert("An unexpected error occurred: " + error.message);
-      }
-    }
+  const data = {
+    feature: "LOGIN",
+    mobileNumber: mobileNumber,
+    password: password,
   };
+
+  try {
+    let loginDataRes = await postData('service', data);
+    console.log("loginDataRes----- ", loginDataRes.data);
+
+    if (loginDataRes.data && loginDataRes.data.data.status === 'ACTIVE') {
+      await AsyncStorage.setItem('loginInfo', JSON.stringify(loginDataRes.data));
+      navigation.navigate("Dashboard", { loginInfo: loginDataRes.data });
+      console.log("Login successful.");
+    } else {
+      Alert.alert("Login Failed", "Please enter the correct mobile number and password.", [
+        { text: "OK", onPress: () => navigation.navigate("Login") }
+      ]);
+    }
+  } catch (error) {
+    if (error.response) {
+      console.error("Server responded with an error:", error.response.status);
+      if (error.response.status === 502) {
+        Alert.alert("Server is currently unavailable. Please try again later.");
+      } else {
+        Alert.alert("Login failed: " + error.response.data.message);
+      }
+    } else if (error.request) {
+      Alert.alert("Network error. Please check your internet connection.");
+    } else {
+      Alert.alert("An unexpected error occurred: " + error.message);
+    }
+  } finally {
+    setLoading(false); // Stop loading
+  }
+};
+
 
   return (
     <View style={styles.container}>
@@ -80,6 +126,11 @@ export default function LoginScreen({ navigation }) {
       <Image /> */}
 
       {/* <Text style={styles.title}>Login</Text> */}
+
+    {loading ? (
+  <BarIndicator color="#51087E" count={5} size={40} />
+) : (
+      <>
       <TextInput
         style={styles.input}
         placeholder="Enter mobile number"
@@ -117,6 +168,8 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.buttonText}>Admin Login</Text>
         </TouchableOpacity> */}
       </View>
+       </>
+    )}
     </View>
   );
 }
