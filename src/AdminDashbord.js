@@ -23,7 +23,7 @@ export default function AdminDashboardScreen({ navigation }) {
             url:"https://drive.google.com/file/d/1BwvxBACfaMZ7XhtkHuC2NUKwXLVQduiV/view?usp=sharing"
         }
 
-        Share.open(options)
+        Share.open({...options})
             .then(res => console.log(res))
             .catch(err => console.log(err))
     }
